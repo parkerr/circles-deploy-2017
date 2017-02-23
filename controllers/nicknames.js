@@ -1,66 +1,97 @@
 var mongoose = require('mongoose');
-var spaces = mongoose.model('Space');
+var nicknames = mongoose.model('Nickname');
 
 
-var getAll = function(req, res){
-  spaces.find().sort({number: 1}).exec(function(err, space){
-    if(!space.length){
-      sendJsonResponse(res, 404, {"message" : "no spaces found"});
+module.exports.getAllNicknames = function(req, res){
+  nicknames.find().exec(function(err, result){
+    
+    if(!result.length){
+      
+      sendJsonResponse(res, 404, {"message" : "ERROR: no nicknames found"});
       return
+      
     } else if(err){
+      
       sendJsonResponse(res, 404, err);
       return
     }
-    sendJsonResponse(res, 200, space);
+    sendJsonResponse(res, 200, result);
   });
+  
 };
 
 
-module.exports.getAllSpaces = function(req, res){
-  getAll(req, res);
-};
-
-module.exports.getOneSpace = function(req, res) {
-  if (req.params && req.params.spacenumber){
-    spaces.find({number : req.params.spacenumber}).exec(function(err, space){
-      if(!space.length){
-		  sendJsonResponse(res, 404, {"message" : "space number not found"});
+// This will get the one nickname.
+// If the nickname doesnt exist it will be created and returned
+module.exports.getOneNickname = function(req, res) {
+  if (req.params && req.params.nickname){
+    nicknames.find({nickname : req.params.nickname}).exec(function(err, result){
+    //As the search is not by id then an array is returned
+    let nickname = result[0];
+      if(!nickname.length){
+          //This nickname does not exist so lets create a new one
+          // Return in here so it doesnt send default response
+          createNickname(res, req.params.nickname)
           return
 	  } else if(err){
           sendJsonResponse(res, 404, err);
           return
       }
-      sendJsonResponse(res, 200, space);
+      sendJsonResponse(res, 200, nickname);
     });
   } else {
-    sendJsonResponse(res, 404, {"message" : "no space number in request"});
+    sendJsonResponse(res, 404, {"message" : "ERROR: No nickname in request"});
   }    
 };
 
-module.exports.makeSpaceUnavailable = function(req, res){
-    spaces.findOneAndUpdate({number: req.params.spacenumber}, {$pull: {availableOn: req.params.date}}, {new: true}, function(err, space){
-	  getAll(req, res);
+
+
+
+
+module.exports.updateOneNickname = function(req, res) {
+    if (req.params && req.params.nickname){
+      nicknames.find({nickname : req.params.nickname}).exec(function(err, result){
+      let nickname = result[0];
+        if(!nickname.length){
+            //This nickname does not exist so send an error
+            sendJsonResponse(res, 404, {"message" : "ERROR: Nickname does not exist"});
+            return
+  	      } else if(err){
+            sendJsonResponse(res, 404, err);
+            return
+          }
+         //This is where we issue the update 
+         updateNickname(res, req, nickname)
+      });
+    } else {
+      sendJsonResponse(res, 404, {"message" : "ERROR: No nickname in request"});
+    }        
+};
+
+// Helper function to create a new nickname
+var updateNickname = function(res, req, nickname){
+    nickname.stones = req.body.stones;
+    nickname.showHalves = req.body.showHalves;
+    nickname.poundsLost = req.body.poundsLost;
+    nickname.save(function(err, nickname){
+      if(err){
+        console.log(err);
+      }else{
+        console.log("Nickname Updated")
+        sendJsonResponse(res, 200, nickname);
+      }
     });
 };
 
-module.exports.makeSpaceAvailable = function(req, res){
-    spaces.findOneAndUpdate({number: req.params.spacenumber}, {$push: {availableOn: req.params.date}}, {new: true}, function(err, space){
-	  getAll(req, res);
-    });
-};
 
-
-module.exports.updateOneSpace = function(req, res) {
-};
-
-
-module.exports.createSpace = function(req, res){
-  spaces.create({number: 1}, function(err, card){
-    sendJsonResponse(res, 200, card);
+// Helper function to create a new nickname
+var createNickname = function(res, nickname){
+  nicknames.create({nickname: nickname,stones: 1, showHalves:false, poundsLost:0 }, function(err, nickname){
+    sendJsonResponse(res, 200, nickname);
   });
 };
 
-
+// Helper function to send response
 var sendJsonResponse = function(res, status, content){
   res.status(status);
   res.json(content);
