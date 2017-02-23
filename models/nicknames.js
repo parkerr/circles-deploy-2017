@@ -1,10 +1,11 @@
 var mongoose = require('mongoose');
 
-var spaceSchema = new mongoose.Schema({
-  number: Number,
-  owner : String,
-  availableOn : [Date]
+var nicknameSchema = new mongoose.Schema({
+  nickname: String,
+  stones : Number,
+  showHalves : Boolean,
+  poundsLost : Number
 });
 
 
-mongoose.model('Space', spaceSchema);
+mongoose.model('Nickname', nicknameSchema);

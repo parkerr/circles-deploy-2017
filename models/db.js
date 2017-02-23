@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var gracefulShutdown;
-var dbURI = 'mongodb://localhost/parking';
+var dbURI = 'mongodb://localhost/weightchart';
 if(process.env.NODE_ENV == 'production'){
   dbURI = process.env.MONGODB_URI;
 }
@@ -40,4 +40,4 @@ process.on('SIGTERM', function(){
   })
 })
 
-require('./spaces');
+require('./nicknames');
