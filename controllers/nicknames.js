@@ -22,7 +22,7 @@ module.exports.getOneNickname = function(req, res) {
   if (req.params && req.params.nickname){
     nicknames.find({nickname : req.params.nickname}).exec(function(err, result){
     //As the search is not by id then an array is returned   
-    let nickname = result[0];
+    var nickname = result[0];
       if(result.length === 0){
           //This nickname does not exist so lets create a new one
           // Return in here so it doesnt send default response
@@ -46,7 +46,7 @@ module.exports.getOneNickname = function(req, res) {
 module.exports.updateOneNickname = function(req, res) {
     if (req.params && req.params.nickname){
       nicknames.find({nickname : req.params.nickname}).exec(function(err, result){
-      let nickname = result[0];
+      var nickname = result[0];
         if(result.length === 0){
             //This nickname does not exist so send an error
             sendJsonResponse(res, 404, {"message" : "ERROR: Nickname does not exist"});
