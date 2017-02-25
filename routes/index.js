@@ -4,8 +4,8 @@ var router = express.Router();
 var ctrlNicknames = require('../controllers/nicknames');
 
 //Nicknames
-router.get('/nicknames', ctrlSpaces.getAllNicknames);
-router.get('/nicknames/:nickname', ctrlSpaces.getOneNickname);
-router.put('/nicknames/:nickname', ctrlSpaces.updateOneNickname);
+router.get('/nicknames', ctrlNicknames.getAllNicknames);
+router.get('/nicknames/:nickname', ctrlNicknames.getOneNickname);
+router.put('/nicknames/:nickname', ctrlNicknames.updateOneNickname);
 
 module.exports = router;
